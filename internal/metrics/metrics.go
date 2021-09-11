@@ -17,24 +17,22 @@ var (
 		[]string{"hostname"},
 	)
 
-	// DNSQueriesToday - The number of DNS requests made over PI-Hole over the current day.
-	DNSQueriesToday = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name:      "dns_queries_today",
+	// DNSQueriesTotal - The number of DNS requests made over PI-Hole
+	DNSQueriesTotal = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name:      "dns_queries_total",
 			Namespace: "pihole",
-			Help:      "This represent the number of DNS queries made over the current day",
+			Help:      "This represent the number of DNS queries made since the exporter started",
 		},
-		[]string{"hostname"},
 	)
 
-	// AdsBlockedToday - The number of ads blocked by PI-Hole over the current day.
-	AdsBlockedToday = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name:      "ads_blocked_today",
+	// AdsBlockedTotal - The number of ads blocked by PI-Hole
+	AdsBlockedTotal = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name:      "ads_blocked_total",
 			Namespace: "pihole",
-			Help:      "This represent the number of ads blocked over the current day",
+			Help:      "This represent the number of ads blocked since the exporter started",
 		},
-		[]string{"hostname"},
 	)
 
 	// AdsPercentageToday - The percentage of ads blocked by PI-Hole over the current day.
@@ -181,8 +179,8 @@ var (
 // Init initializes all Prometheus metrics made available by PI-Hole exporter.
 func Init() {
 	initMetric("domains_blocked", DomainsBlocked)
-	initMetric("dns_queries_today", DNSQueriesToday)
-	initMetric("ads_blocked_today", AdsBlockedToday)
+	initMetric("dns_queries_total", DNSQueriesTotal)
+	initMetric("ads_blocked_today", AdsBlockedTotal)
 	initMetric("ads_percentag_today", AdsPercentageToday)
 	initMetric("unique_domains", UniqueDomains)
 	initMetric("queries_forwarded", QueriesForwarded)
@@ -199,7 +197,7 @@ func Init() {
 	initMetric("status", Status)
 }
 
-func initMetric(name string, metric *prometheus.GaugeVec) {
+func initMetric(name string, metric prometheus.Collector) {
 	prometheus.MustRegister(metric)
 	log.Printf("New Prometheus metric registered: %s", name)
 }

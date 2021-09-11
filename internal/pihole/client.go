@@ -24,6 +24,12 @@ type Client struct {
 	config     *config.Config
 }
 
+type DnsRequests struct {
+	totalQueries        int
+	totalAdsBlocked int
+}
+var requests DnsRequests
+
 // NewClient method initializes a new PI-Hole client.
 func NewClient(config *config.Config) *Client {
 	err := config.Validate()
@@ -60,8 +66,7 @@ func (c *Client) Metrics() http.HandlerFunc {
 
 func (c *Client) setMetrics(stats *Stats) {
 	metrics.DomainsBlocked.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.DomainsBeingBlocked))
-	metrics.DNSQueriesToday.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.DNSQueriesToday))
-	metrics.AdsBlockedToday.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.AdsBlockedToday))
+
 	metrics.AdsPercentageToday.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.AdsPercentageToday))
 	metrics.UniqueDomains.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.UniqueDomains))
 	metrics.QueriesForwarded.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.QueriesForwarded))
@@ -75,6 +80,23 @@ func (c *Client) setMetrics(stats *Stats) {
 	metrics.Reply.WithLabelValues(c.config.PIHoleHostname, "cname").Set(float64(stats.ReplyCname))
 	metrics.Reply.WithLabelValues(c.config.PIHoleHostname, "ip").Set(float64(stats.ReplyIP))
 
+	if requests.totalQueries == 0 {
+		requests.totalQueries = stats.DNSQueriesToday
+	} else {
+		var newQueries = stats.DNSQueriesToday - requests.totalQueries
+		requests.totalQueries = stats.DNSQueriesToday
+		metrics.DNSQueriesTotal.Add(float64(newQueries))
+	}
+
+	if requests.totalAdsBlocked == 0 {
+		requests.totalAdsBlocked = stats.AdsBlockedToday
+	} else {
+		var newAdsBlocked = stats.AdsBlockedToday - requests.totalAdsBlocked
+		requests.totalAdsBlocked = stats.AdsBlockedToday
+		// Todo sort out label here
+		metrics.AdsBlockedTotal.Add(float64(newAdsBlocked))
+	}
+	
 	var isEnabled int = 0
 	if stats.Status == enabledStatus {
 		isEnabled = 1
