@@ -18,21 +18,23 @@ var (
 	)
 
 	// DNSQueriesTotal - The number of DNS requests made over PI-Hole
-	DNSQueriesTotal = prometheus.NewCounter(
+	DNSQueriesTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name:      "dns_queries_total",
 			Namespace: "pihole",
 			Help:      "This represent the number of DNS queries made since the exporter started",
 		},
+		[]string{"hostname"},
 	)
 
 	// AdsBlockedTotal - The number of ads blocked by PI-Hole
-	AdsBlockedTotal = prometheus.NewCounter(
+	AdsBlockedTotal = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Name:      "ads_blocked_total",
 			Namespace: "pihole",
 			Help:      "This represent the number of ads blocked since the exporter started",
 		},
+		[]string{"hostname"},
 	)
 
 	// AdsPercentageToday - The percentage of ads blocked by PI-Hole over the current day.
@@ -180,8 +182,8 @@ var (
 func Init() {
 	initMetric("domains_blocked", DomainsBlocked)
 	initMetric("dns_queries_total", DNSQueriesTotal)
-	initMetric("ads_blocked_today", AdsBlockedTotal)
-	initMetric("ads_percentag_today", AdsPercentageToday)
+	initMetric("ads_blocked_total", AdsBlockedTotal)
+	initMetric("ads_percentage_today", AdsPercentageToday)
 	initMetric("unique_domains", UniqueDomains)
 	initMetric("queries_forwarded", QueriesForwarded)
 	initMetric("queries_cached", QueriesCached)
