@@ -74,7 +74,6 @@ func (c *Client) setMetrics(stats *Stats) {
 	metrics.QueriesCached.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.QueriesCached))
 	metrics.ClientsEverSeen.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.ClientsEverSeen))
 	metrics.UniqueClients.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.UniqueClients))
-	metrics.DNSQueriesAllTypes.WithLabelValues(c.config.PIHoleHostname).Set(float64(stats.DNSQueriesAllTypes))
 
 	metrics.Reply.WithLabelValues(c.config.PIHoleHostname, "no_data").Set(float64(stats.ReplyNoData))
 	metrics.Reply.WithLabelValues(c.config.PIHoleHostname, "nx_domain").Set(float64(stats.ReplyNxDomain))

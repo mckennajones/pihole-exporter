@@ -97,16 +97,6 @@ var (
 		[]string{"hostname"},
 	)
 
-	// DNSQueriesAllTypes - The number of DNS queries made for all types by PI-Hole.
-	DNSQueriesAllTypes = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name:      "dns_queries_all_types",
-			Namespace: "pihole",
-			Help:      "This represent the number of DNS queries made for all types",
-		},
-		[]string{"hostname"},
-	)
-
 	// Reply - The number of replies made for every types by PI-Hole.
 	Reply = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -189,7 +179,6 @@ func Init() {
 	initMetric("queries_cached", QueriesCached)
 	initMetric("clients_ever_seen", ClientsEverSeen)
 	initMetric("unique_clients", UniqueClients)
-	initMetric("dns_queries_all_types", DNSQueriesAllTypes)
 	initMetric("reply", Reply)
 	initMetric("top_queries", TopQueries)
 	initMetric("top_ads", TopAds)
